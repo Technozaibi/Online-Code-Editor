@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Code Editor - HTML, CSS, JS & Live Preview</title>
+    <meta name="description" content="An advanced online code editor for HTML, CSS, and JavaScript with real-time preview, download, and file loading functionalities. Optimize your web development workflow.">
+    <meta name="keywords" content="HTML editor, CSS editor, JavaScript editor, live preview, code editor online, web development tools, HTML CSS JS playground">
+    <meta name="author" content="Your Name/Company Name">
+
+    <meta property="og:title" content="Advanced Code Editor - HTML, CSS, JS & Live Preview">
+    <meta property="og:description" content="An advanced online code editor for HTML, CSS, and JavaScript with real-time preview, download, and file loading functionalities. Optimize your web development workflow.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.yourwebsite.com/editor">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="lib/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="lib/codemirror/theme/dracula.css"> <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="desktop-notification" class="notification-bar">
+        Use this in Desktop View for Better Experience
+    </div>
+
+    <nav class="navbar">
+        <div class="container">
+            <a href="#" class="logo">CodeEditor</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Editor</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn">Adsense Approval <span class="arrow">&#9660;</span></a>
+                    <div class="dropdown-content">
+                        <a href="pages/about.html">About Us</a>
+                        <a href="pages/privacy-policy.html">Privacy Policy</a>
+                        <a href="pages/contact.html">Contact Us</a>
+                        <a href="pages/terms.html">Terms & Conditions</a>
+                    </div>
+                </li>
+            </ul>
+            <div class="menu-buttons">
+                <input type="file" id="file-input" style="display: none;" accept=".html, .css, .js">
+                <button id="load-file-btn" class="btn">Load File</button>
+                <button id="download-all-btn" class="btn">Download All Code</button>
+                <button id="clear-all-btn" class="btn">Clear All Fields</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="editor-container">
+        <div class="code-panels">
+            <div class="code-panel">
+                <h3>HTML</h3>
+                <textarea id="html-code" class="code-editor"></textarea>
+            </div>
+            <div class="code-panel">
+                <h3>CSS</h3>
+                <textarea id="css-code" class="code-editor"></textarea>
+            </div>
+            <div class="code-panel">
+                <h3>JavaScript</h3>
+                <textarea id="js-code" class="code-editor"></textarea>
+            </div>
+        </div>
+        <div class="preview-panel">
+            <h3>Live Preview</h3>
+            <iframe id="live-preview" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
+        </div>
+    </div>
+
+    <script src="lib/codemirror/lib/codemirror.js"></script>
+    <script src="lib/codemirror/mode/xml/xml.js"></script>
+    <script src="lib/codemirror/mode/css/css.js"></script>
+    <script src="lib/codemirror/mode/javascript/javascript.js"></script>
+
+    <script src="lib/FileSaver.js"></script> <script src="script.js"></script>
+</body>
+  </html>
+                  
