@@ -1,0 +1,344 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Code Editor</title>
+    <meta name="description" content="An advanced online HTML, CSS, and JavaScript editor with live preview and file management features. Optimized for a clean and user-friendly experience.">
+    <meta name="keywords" content="HTML editor, CSS editor, JavaScript editor, online code editor, live preview, web development tools, front-end editor">
+    <meta name="author" content="Your Name/Online Code Editor">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Basic reset and font application */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Prevent scroll on main body to keep layout stable */
+        }
+
+        /* Styling for textareas to ensure monospace font and proper tab display */
+        textarea {
+            font-family: monospace;
+            tab-size: 4;
+            -moz-tab-size: 4;
+            white-space: pre; /* Preserve whitespace and line breaks */
+            overflow: auto; /* Enable scrolling if content overflows */
+            resize: none; /* Disable manual resizing by the user */
+            min-height: 0; /* Ensures textarea can properly flex within its container */
+        }
+
+        /* Custom scrollbar styling for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 h-screen flex flex-col">
+    <!-- Header section with title and global action buttons -->
+    <header class="bg-gradient-to-r from-blue-600 to-purple-700 text-white p-4 shadow-lg flex flex-col sm:flex-row justify-between items-center z-10">
+        <h1 class="text-2xl font-bold mb-2 sm:mb-0">Online Code Editor</h1>
+        <div class="flex flex-wrap justify-center sm:justify-end gap-2">
+            <!-- Global Buttons for file operations and overall actions -->
+            <button id="loadAllBtn" class="bg-white text-blue-700 px-5 py-2.5 rounded-lg shadow-xl hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-300 font-semibold text-sm sm:text-base">Load File</button>
+            <button id="downloadAllBtn" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-5 py-2.5 rounded-lg shadow-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-300 font-semibold text-sm sm:text-base">Download All</button>
+            <button id="clearAllBtn" class="bg-gray-200 text-gray-700 px-5 py-2.5 rounded-lg shadow-xl hover:bg-gray-300 hover:text-gray-900 transition-all duration-300 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-gray-400 font-semibold text-sm sm:text-base">Clear All</button>
+            <button id="copyAllBtn" class="bg-gray-200 text-gray-700 px-5 py-2.5 rounded-lg shadow-xl hover:bg-gray-300 hover:text-gray-900 transition-all duration-300 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-gray-400 font-semibold text-sm sm:text-base">Copy All</button>
+        </div>
+    </header>
+
+    <!-- Main content area, split into code editor and live preview -->
+    <main class="flex flex-1 flex-col sm:flex-row overflow-hidden">
+        <!-- Code Editor Section -->
+        <section class="flex flex-col w-full sm:w-1/2 bg-gray-50 border-r border-gray-200 shadow-inner overflow-hidden flex-1">
+            <!-- Navigation tabs for HTML, CSS, JavaScript editors -->
+            <div class="flex justify-center p-2 bg-gray-200 border-b border-gray-300">
+                <button id="htmlTabBtn" class="tab-btn bg-blue-500 text-white px-6 py-2.5 rounded-lg mx-1 shadow-md hover:scale-105 active:scale-95 transition-all duration-300 font-semibold text-sm sm:text-base">HTML</button>
+                <button id="cssTabBtn" class="tab-btn bg-gray-300 text-gray-800 px-6 py-2.5 rounded-lg mx-1 shadow-md hover:bg-gray-400 hover:scale-105 active:scale-95 transition-all duration-300 font-semibold text-sm sm:text-base">CSS</button>
+                <button id="jsTabBtn" class="tab-btn bg-gray-300 text-gray-800 px-6 py-2.5 rounded-lg mx-1 shadow-md hover:bg-gray-400 hover:scale-105 active:scale-95 transition-all duration-300 font-semibold text-sm sm:text-base">JavaScript</button>
+            </div>
+
+            <!-- Editor panels container -->
+            <div class="flex-1 flex flex-col overflow-hidden">
+                <!-- HTML Editor Panel -->
+                <div id="htmlEditor" class="editor-panel flex flex-col flex-1 w-full">
+                    <div class="flex flex-wrap justify-end p-4 pb-2 gap-2">
+                        <button class="action-btn bg-gray-200 text-gray-700 px-4 py-1.5 rounded-md shadow-sm hover:bg-gray-300 hover:text-gray-900 transition-all duration-200 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs sm:text-sm font-medium" onclick="clearField('htmlCode')">Clear HTML</button>
+                        <button class="action-btn bg-gray-200 text-gray-700 px-4 py-1.5 rounded-md shadow-sm hover:bg-gray-300 hover:text-gray-900 transition-all duration-200 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs sm:text-sm font-medium" onclick="copyField('htmlCode')">Copy HTML</button>
+                        <button class="action-btn bg-gray-200 text-gray-700 px-4 py-1.5 rounded-md shadow-sm hover:bg-gray-300 hover:text-gray-900 transition-all duration-200 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs sm:text-sm font-medium" onclick="selectAll('htmlCode')">Select All</button>
+                        <button class="action-btn bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-1.5 rounded-md shadow-sm hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-300 text-xs sm:text-sm font-medium" onclick="downloadFile('htmlCode', 'index.html', 'text/html')">Download HTML</button>
+                    </div>
+                    <textarea id="htmlCode" class="flex-1 p-4 border border-gray-300 rounded-md shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm sm:text-lg leading-relaxed h-full w-full"></textarea>
+                </div>
+
+                <!-- CSS Editor Panel (initially hidden) -->
+                <div id="cssEditor" class="editor-panel hidden flex-col flex-1 w-full">
+                    <div class="flex flex-wrap justify-end p-4 pb-2 gap-2">
+                        <button class="action-btn bg-gray-200 text-gray-700 px-4 py-1.5 rounded-md shadow-sm hover:bg-gray-300 hover:text-gray-900 transition-all duration-200 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs sm:text-sm font-medium" onclick="clearField('cssCode')">Clear CSS</button>
+                        <button class="action-btn bg-gray-200 text-gray-700 px-4 py-1.5 rounded-md shadow-sm hover:bg-gray-300 hover:text-gray-900 transition-all duration-200 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs sm:text-sm font-medium" onclick="copyField('cssCode')">Copy CSS</button>
+                        <button class="action-btn bg-gray-200 text-gray-700 px-4 py-1.5 rounded-md shadow-sm hover:bg-gray-300 hover:text-gray-900 transition-all duration-200 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs sm:text-sm font-medium" onclick="selectAll('cssCode')">Select All</button>
+                        <button class="action-btn bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-1.5 rounded-md shadow-sm hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-300 text-xs sm:text-sm font-medium" onclick="downloadFile('cssCode', 'style.css', 'text/css')">Download CSS</button>
+                    </div>
+                    <textarea id="cssCode" class="flex-1 p-4 border border-gray-300 rounded-md shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm sm:text-lg leading-relaxed h-full w-full"></textarea>
+                </div>
+
+                <!-- JavaScript Editor Panel (initially hidden) -->
+                <div id="jsEditor" class="editor-panel hidden flex-col flex-1 w-full">
+                    <div class="flex flex-wrap justify-end p-4 pb-2 gap-2">
+                        <button class="action-btn bg-gray-200 text-gray-700 px-4 py-1.5 rounded-md shadow-sm hover:bg-gray-300 hover:text-gray-900 transition-all duration-200 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs sm:text-sm font-medium" onclick="clearField('jsCode')">Clear JS</button>
+                        <button class="action-btn bg-gray-200 text-gray-700 px-4 py-1.5 rounded-md shadow-sm hover:bg-gray-300 hover:text-gray-900 transition-all duration-200 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs sm:text-sm font-medium" onclick="copyField('jsCode')">Copy JS</button>
+                        <button class="action-btn bg-gray-200 text-gray-700 px-4 py-1.5 rounded-md shadow-sm hover:bg-gray-300 hover:text-gray-900 transition-all duration-200 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs sm:text-sm font-medium" onclick="selectAll('jsCode')">Select All</button>
+                        <button class="action-btn bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-1.5 rounded-md shadow-sm hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-300 text-xs sm:text-sm font-medium" onclick="downloadFile('jsCode', 'script.js', 'text/javascript')">Download JS</button>
+                    </div>
+                    <textarea id="jsCode" class="flex-1 p-4 border border-gray-300 rounded-md shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm sm:text-lg leading-relaxed h-full w-full"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Preview Section -->
+        <section class="flex flex-col w-full sm:w-1/2 bg-white shadow-inner overflow-hidden flex-1">
+            <h2 class="text-xl font-semibold p-4 bg-gray-200 border-b border-gray-300 text-center">Live Preview</h2>
+            <!-- Iframe for rendering the live output of the code -->
+            <iframe id="livePreview" class="flex-1 w-full h-full border-0 bg-white"></iframe>
+        </section>
+    </main>
+
+    <!-- Hidden file input element, triggered by the "Load File" button -->
+    <input type="file" id="fileInput" accept=".html,.css,.js" class="hidden">
+
+    <!-- Message Box for user feedback (e.g., "Copied!", "File Loaded!") -->
+    <div id="messageBox" class="fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-md shadow-lg opacity-0 transition-opacity duration-300 z-50">
+        Message goes here.
+    </div>
+
+    <!-- Desktop View Notification Message -->
+    <div id="desktopViewNotification" class="fixed top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-xl flex items-center space-x-4 z-50 transition-all duration-500 ease-out transform scale-100 opacity-100 md:hidden">
+        <span>Open it in Desktop View for Better Experience</span>
+        <button id="dismissNotificationBtn" class="bg-white text-blue-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold hover:bg-gray-100 transition-colors duration-200">
+            &times;
+        </button>
+    </div>
+
+    <script>
+        // Get references to all necessary DOM elements
+        const htmlCode = document.getElementById('htmlCode');
+        const cssCode = document.getElementById('cssCode');
+        const jsCode = document.getElementById('jsCode');
+        const livePreview = document.getElementById('livePreview');
+        const htmlTabBtn = document.getElementById('htmlTabBtn');
+        const cssTabBtn = document.getElementById('cssTabBtn');
+        const jsTabBtn = document.getElementById('jsTabBtn');
+        const htmlEditorPanel = document.getElementById('htmlEditor');
+        const cssEditorPanel = document.getElementById('cssEditor');
+        const jsEditorPanel = document.getElementById('jsEditor');
+        const loadAllBtn = document.getElementById('loadAllBtn');
+        const downloadAllBtn = document.getElementById('downloadAllBtn');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const copyAllBtn = document.getElementById('copyAllBtn');
+        const fileInput = document.getElementById('fileInput');
+        const messageBox = document.getElementById('messageBox');
+        const desktopViewNotification = document.getElementById('desktopViewNotification');
+        const dismissNotificationBtn = document.getElementById('dismissNotificationBtn');
+
+        // Default code snippets
+        const defaultHtml = `<!-- Welcome to the Online Code Editor! -->
+<div class='container'>
+    <h1>Hello, World!</h1>
+    <p>Techno Zaibi offers you the ability to edit the HTML, CSS, and JavaScript code above and see your changes instantly reflected here.</p>
+    <button id='myButton'>Click Me</button>
+    <div id='message' class='mt-4 text-lg font-semibold'></div>
+</div>`;
+
+        const defaultCss = `/* Basic styling for the live preview */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f0f4f8;
+    color: #2d3748;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.container {
+    max-width: 800px;
+    width: 90%;
+    margin: 20px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    border: 1px solid #e2e8f0;
+}
+
+h1 {
+    color: #3182ce;
+    margin-bottom: 20px;
+    font-size: 2.8em;
+    font-weight: 700;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.05);
+}
+
+p {
+    line-height: 1.75;
+    font-size: 1.15em;
+    margin-bottom: 25px;
+    color: #4a5568;
+}
+
+button {
+    background-color: #48bb78; /* Green-500 */
+    color: white;
+    padding: 12px 28px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    outline: none;
+}
+
+button:hover {
+    background-color: #38a169; /* Green-600 */
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+        width: 95%;
+    }
+    h1 {
+        font-size: 2em;
+    }
+    p {
+        font-size: 1em;
+    }
+    button {
+        padding: 10px 20px;
+        font-size: 1em;
+    }
+}`;
+
+        const defaultJs = `// JavaScript for interactivity
+document.addEventListener('DOMContentLoaded', () => {
+    const myButton = document.getElementById('myButton');
+    const messageDiv = document.getElementById('message');
+
+    if (myButton && messageDiv) {
+        myButton.addEventListener('click', () => {
+            messageDiv.textContent = 'Button clicked! You can change this message in the JS editor.';
+            messageDiv.style.color = '#38a169'; // Tailwind green-600
+        });
+    }
+});`;
+
+        /**
+         * Sets the initial default code into the editor fields.
+         */
+        function setInitialCode() {
+            htmlCode.value = defaultHtml;
+            cssCode.value = defaultCss;
+            jsCode.value = defaultJs;
+        }
+
+        /**
+         * Displays a temporary message box with user feedback.
+         * @param {string} message - The message to display.
+         */
+        function showMessage(message) {
+            messageBox.textContent = message;
+            messageBox.classList.remove('opacity-0');
+            messageBox.classList.add('opacity-100');
+            // Hide the message after 3 seconds
+            setTimeout(() => {
+                messageBox.classList.remove('opacity-100');
+                messageBox.classList.add('opacity-0');
+            }, 3000);
+        }
+
+        /**
+         * Updates the content of the live preview iframe with the current HTML, CSS, and JS.
+         */
+        function updatePreview() {
+            const html = htmlCode.value;
+            const css = cssCode.value;
+            const js = jsCode.value;
+
+            // Construct the complete HTML content including styles and scripts
+            const content = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Live Preview</title>
+                    <style>${css}</style>
+                </head>
+                <body>
+                    ${html}
+                    <script>${js}<\/script>
+                </body>
+                </html>
+            `;
+
+            // Write the generated content into the iframe's document
+            livePreview.contentWindow.document.open();
+            livePreview.contentWindow.document.write(content);
+            livePreview.contentWindow.document.close();
+        }
+
+        /**
+         * Switches the active editor tab (HTML, CSS, or JavaScript).
+         * @param {string} tabName - The name of the tab to activate ('html', 'css', or 'js').
+         */
+        function switchTab(tabName) {
+            // Hide all editor panels
+            htmlEditorPanel.classList.add('hidden');
+            cssEditorPanel.classList.add('hidden');
+            jsEditorPanel.classList.add('hidden');
+
+            // Reset styling for all tab buttons to inactive state
+            htmlTabBtn.classList.remove('bg-blue-500', 'text-white');
+            htmlTabBtn.classList.add('bg-gray-300', 'text-gray-800', 'hover:bg-gray-400');
+            cssTabBtn.classList.remove('bg-blue-500', 'text-white');
+            cssTabBtn.classList.add('bg-gray-300', 'text-gray-800', 'hover:bg-gray-400');
+            jsTabBtn.classList.remove('bg-blue-500', 'text-white');
+            jsTabBtn.classList.add('bg-gray-300', 'text-gray-800', 'hover:bg-gray-400');
+
+            // Show the selected editor panel and apply active tab button styling
+            if (tabName === 'html') {
+                htmlEditorPanel.classList.remove('hidden');
+                htmlTabBtn.classList.add('bg-blue-500', 'text-white');
+                htmlTabBtn.classList.remove('bg-gray-300', 'text-gray-800', 'hover:bg-gray-400');
+            } else if (tabName === 'css') {
+                cssEditorPanel.classList.remove('hidden');
+                cssTabBtn.classList.add('bg-blue-500', 'text-white');
+                cssTabBtn.classList.remove('bg-gray-300', 'text-gray-800',
